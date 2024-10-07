@@ -1,0 +1,135 @@
+#include <Servo.h>
+
+const int in1 = 4;   // Forward
+const int in2 = 2;   // Backward
+const int in3 = 7;   // Forward
+const int in4 = 8;   // Backward`
+const int speedPin1 = 5;  // PWM for Forward/Backward motor speed
+const int speedPin2 = 3;  // PWM for Forward/Backward motor speed
+
+int motorSpeed = 145;   // Maximum speed for forward/backward movement
+Servo steeringServo;  // Create servo object to control the MG996R
+const int servoPin = 10;  // Pin connected to the MG996R signal
+
+void setup() {
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+
+  pinMode(speedPin1, OUTPUT);
+  pinMode(speedPin2, OUTPUT);
+
+  steeringServo.attach(servoPin);  // Attach the MG996R servo to pin 10
+  steeringServo.write(90);  // Set the MG996R servo to the center position (90 degrees)
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    char command = Serial.read();
+
+    if (command == 'f') {
+      forward();
+    }
+
+    if (command == 'b') {
+      back();
+    }
+
+    if (command == 'r') {
+      steerRightForward();
+    }
+
+    if (command == 'l') {
+      steerLeftForward();
+    }
+
+    if (command == 's') {
+      stopMotors();
+    }
+
+    if (command == 'R') {
+      steerRightBackward();
+    }
+
+    if (command == 'L') {
+      steerLeftBackward();
+    }
+  }
+}
+
+void forward() {
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  analogWrite(speedPin2, motorSpeed);
+  analogWrite(speedPin1, motorSpeed);
+  steeringServo.write(90);  // Keep the MG996R centered when moving forward
+}
+
+void back() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  analogWrite(speedPin2, motorSpeed);
+  analogWrite(speedPin1, motorSpeed);
+  steeringServo.write(90);  // Keep the MG996R centered when moving backward
+}
+
+void steerRightForward() {
+  // Move forward while turning right
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  analogWrite(speedPin2, motorSpeed);
+  analogWrite(speedPin1, motorSpeed);
+  steeringServo.write(15);  // Turn the MG996R to the right 
+}
+
+void steerLeftForward() {
+  // Move forward while turning left
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  analogWrite(speedPin2, motorSpeed);
+  analogWrite(speedPin1, motorSpeed);
+  steeringServo.write(145);  // Turn the MG996R to the left
+}
+
+void steerRightBackward() {
+  // Move backward while turning right
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  analogWrite(speedPin2, motorSpeed);
+  analogWrite(speedPin1, motorSpeed);
+  steeringServo.write(15);  // Turn the MG996R to the right
+}
+
+void steerLeftBackward() {
+  // Move backward while turning left
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  analogWrite(speedPin2, motorSpeed);
+  analogWrite(speedPin1, motorSpeed);
+  steeringServo.write(145);  // Turn the MG996R to the left
+}
+
+void stopMotors() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+  analogWrite(speedPin1, 0);
+  analogWrite(speedPin2, 0);
+  steeringServo.write(90);  // Set the MG996R to the center position when stopping
+}
